@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  career-connect:
+    name: Career Connect CI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            career-connect-job-board/package-lock.json
+            career-connect-job-board/client/package-lock.json
+            career-connect-job-board/server/package-lock.json
+
+      - name: Install root dependencies
+        working-directory: career-connect-job-board
+        run: npm ci
+
+      - name: Install client dependencies
+        working-directory: career-connect-job-board/client
+        run: npm ci
+
+      - name: Install server dependencies
+        working-directory: career-connect-job-board/server
+        run: npm ci
+
+      - name: Lint client
+        working-directory: career-connect-job-board/client
+        run: npm run lint
+
+      - name: Build client
+        working-directory: career-connect-job-board/client
+        run: npm run build
+
+      - name: Check server syntax
+        working-directory: career-connect-job-board/server
+        run: node --check server.js
