@@ -24,11 +24,14 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Enable CORS
+// Enable CORS using the configured frontend URL.
+// CLIENT_URL can contain a single origin, e.g. https://example.com.
+const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
 app.use(cors({
-  origin: '*', // Adjust whitelists for production
+  origin: clientUrl,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
 }));
 
 // Resolve paths for local storage fallback
